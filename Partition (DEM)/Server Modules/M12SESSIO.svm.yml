@@ -1,0 +1,38 @@
+﻿ServerModule:
+  Name:               M12Session
+  Target Platform:    Windows/IBM i/Linux
+
+  Multilingual Details:
+  - ENG:
+      Description:        "Application Session"
+
+  - FRA:
+      Description:        "Application Session"
+
+  Source: |
+    Begin_Com Role(*EXTENDS #PRIM_SRVM) Sessionidentifier('M12SESSION')
+    
+    Define Field(#M12UserName) Type(*STRING)
+    Define Field(#M12Password) Type(*STRING)
+    Define Field(#M12ReturnCode) Type(*CHAR) Length(2)
+    
+    Srvroutine Name(SignIn)
+    Field_Map For(*INPUT) Field(#M12UserName) Parameter_Name(UserName)
+    Field_Map For(*INPUT) Field(#M12Password) Parameter_Name(Password)
+    Field_Map For(*OUTPUT) Field(#M12ReturnCode) Parameter_Name(ReturnCode)
+    
+    * TODO: Check username and password
+    
+    #COM_OWNER.StartSession Timeout(3600)
+    
+    #M12ReturnCode := OK
+    
+    Endroutine
+    
+    Srvroutine Name(SignOut) Session(*REQUIRED)
+    
+    #COM_OWNER.EndSession
+    
+    Endroutine
+    
+    End_Com
