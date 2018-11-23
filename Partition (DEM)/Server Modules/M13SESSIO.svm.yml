@@ -1,0 +1,38 @@
+﻿ServerModule:
+  Name:               M13Session
+  Target Platform:    Windows/IBM i/Linux
+
+  Multilingual Details:
+  - ENG:
+      Description:        "Application Session"
+
+  - FRA:
+      Description:        "Application Session"
+
+  Source: |
+    Begin_Com Role(*EXTENDS #PRIM_SRVM) Sessionidentifier('M13SESSION')
+    
+    Define Field(#M13UserName) Type(*STRING)
+    Define Field(#M13Password) Type(*STRING)
+    Define Field(#M13ReturnCode) Type(*CHAR) Length(2)
+    
+    Srvroutine Name(SignIn)
+    Field_Map For(*INPUT) Field(#M13UserName) Parameter_Name(UserName)
+    Field_Map For(*INPUT) Field(#M13Password) Parameter_Name(Password)
+    Field_Map For(*OUTPUT) Field(#M13ReturnCode) Parameter_Name(ReturnCode)
+    
+    * TODO: Check username and password
+    
+    #COM_OWNER.StartSession Timeout(3600)
+    
+    #M13ReturnCode := OK
+    
+    Endroutine
+    
+    Srvroutine Name(SignOut) Session(*REQUIRED)
+    
+    #COM_OWNER.EndSession
+    
+    Endroutine
+    
+    End_Com
